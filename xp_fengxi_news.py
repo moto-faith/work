@@ -1,112 +1,56 @@
-# coding=utf-8
+##coding=utf-8
 
 #############################################################################
-# Copyright (c) 2014  - Beijing Intelligent Star, Inc.  All rights reserved
+# Copyright (c) 2018  - Beijing Intelligent Star, Inc.  All rights reserved
 
 
-'''''
-文件名：
-功能： 爬虫抓取配置文件
+# 枫溪区管理委员会公众网
 
-频道：枫溪区管理委员会公众网
-代码历史：
-徐鹏，创建代码
-'''
-import spider
-import setting
+
+# 2018-12-12：徐鹏
+
+
+import datetime
 import htmlparser
 import re
-import datetime
-import sys
 import copy
-
-reload(sys)
+import requests
 from urlparse import urljoin
+import spiderDefault
+import myreadability
+import json
 
 
-class MySpider(spider.Spider):
+class MySpider(spiderDefault.Spider):
+
     def __init__(self, cmd_args=None):
-        spider.Spider.__init__(self, cmd_args=cmd_args)
+        spiderDefault.Spider.__init__(self, cmd_args=cmd_args)
 
-        self.siteName = "枫溪区管理委员会公众网"
-        self.site_domain = 'fengxi.gov.cn'
         # 类别码，01新闻、02论坛、03博客、04微博 05平媒 06微信  07 视频、99搜索引擎
         self.info_flag = "01"
+        # 网站名称
+        self.siteName = '枫溪区管理委员会公众网'
+        # 网站一级域名
+        self.site_domain = 'fengxi.gov.cn'
+
         self.start_urls = [
-            'http://www.fengxi.gov.cn/news/more.aspx?itemid=263'
+
+            # 列表页链接
+            'http://www.fengxi.gov.cn/news/more.aspx?itemid=263',
+            'http://www.fengxi.gov.cn/news/more.aspx?itemid=167',
+            'http://www.fengxi.gov.cn/news/more.aspx?itemid=522'
+
         ]
-
+        # 网页编码
+        # 例：self.encoding = 'gbk'
         self.encoding = 'utf-8'
-        # self.max_interval = None
-        # self.dedup_uri=None
-        self.ctim = {}
-        self.max_interval = datetime.timedelta(days=3)
         self.c_time = datetime.datetime.utcnow() - datetime.timedelta(days=3)
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.67 Safari/537.36",
-            }
-        self.request_headers = {"headers": headers}
-
-    def get_start_urls(self, data=None):
-        return self.start_urls
-
-    def parse(self, response):
-
-        url_list = []
-        if response is not None:
-            try:
-                response.encoding = self.encoding
-                unicode_html_body = response.text
-                data = htmlparser.Parser(unicode_html_body)
-            except Exception, e:
-                print "parse(): %s" % e
-                return (url_list, None, None)
-
-            urls = data.xpathall('''//div[@class="czwgk_xxlm2_right_ny"]//a''')
-
-            purl = response.request.url
-            if urls:
-                for urla in urls:
-                    url = urla.xpath("//@href").text()
-                    # p_url = re.findall(r"-(\d+)",url)
-                    # if p_url == []:
-                    #     continue
-                    # url = "http://bbs.pc186.com/forum.php?mod=forumdisplay&fid=%s&filter=author&orderby=dateline"%(p_url[0])
-                    URL = 'http://www.fengxi.gov.cn'+url
-                    url_list.append(URL)
-        # return (url_list,  self.parse_next, None)
-        return (url_list, None, None)
-
-    # def parse_next(self, response):
-    #
-    #     url_list = []
-    #     if response is not None:
-    #         try:
-    #             response.encoding = self.encoding
-    #             unicode_html_body = response.text
-    #             data = htmlparser.Parser(unicode_html_body)
-    #         except Exception, e:
-    #             print "parse(): %s"%e
-    #             return (url_list, None, None)
-    #         urls = data.xpathall('''//tbody[contains(@id,"normalthread")]''')
-    #
-    #         purl =response.request.url
-    #         if urls:
-    #             for urla in urls:
-    #                 ctime = urla.xpath('''//td[@class="by"][1]/em/span|//td[@class="by"][1]/em/span/span/@title''').regex('\d+-\d+-\d+').datetime()
-    #                 if ctime<self.c_time:
-    #                     continue
-    #                 url = urla.xpath("//th/a[last()]/@href").text()
-    #                 t_url = re.findall(r"tid=(\d+)",url)
-    #                 url = "http://bbs.pc186.com/thread-%s-1-1.html"%(t_url[0])
-    #                 self.ctim[url] = ctime
-    #                 #URL = 'http://www.0515bh.com'+url
-    #                 url_list.append(url)
-    #
-    #
-    #     return (url_list,  None, None)
+        self.page_url = {}
+        self.max_interval = datetime.timedelta(days=3)
+        # self.dedup_uri=None
 
     def clear_special_xp(self, data, xp):
+        # '''删除指定xpath数据'''
         data = copy.copy(data)
         result = data._root.xpath(xp)
         for i in result:
@@ -116,91 +60,138 @@ class MySpider(spider.Spider):
                 log.logger.error(e)
         return data
 
-    def parse_detail_page(self, response=None, url=None):
-        '''''
-        解析内容页文本
+    def get_detail_page_urls(self, data):
         '''
-        try:
-            response.encoding = self.encoding
-            unicode_html_body = response.text
-            data = htmlparser.Parser(unicode_html_body)
-        except Exception, e:
-            print "parse_detail_page(): %s" % e
-            return None
-        if url is None:
-            url = response.request.url
+        从列表页获取详情页url; 返回列表
+        '''
+        detail_page_urls = []
 
+        if data is not None:
+            url = data.response.request.url
+            # 包含详情页链接和时间的模块，一般以//tr、//li、//div等结尾
+            # 例：loops = data.xpathall('''//div[contains(@class,"news-list2")]//li''')
+            loops = data.xpathall('''//div[@class="czwgk_xxlm2_right_ny"]//li''')
+            for item in loops:  # 这时的item可以看做将解析到的模块当做新的网页打开，页面内只有解析到的模块，以解析的模块为顶级节点进行解析，而不再是标签
+
+                # 此处不要再出现解析模块的Xpath，继续向子节点解析即可
+                # 模块内解析详情页链接，一般以//@href结尾
+                # 例：post_url = item.xpath('''//h3//a//@href''').text().strip()
+                post_url = item.xpath('''//a//@href''').text().strip()
+                if not post_url:
+                    continue
+                post_url = urljoin("http://www.fengxi.gov.cn", post_url)
+                # 模块内解析详情页时间，一般以//span、//div、//p等结尾，如没有则删除这三行
+                # 例：ctime = item.xpath('''//div[@class="tail"]//span[1]''').datetime()
+                ctime = item.xpath('''//span''').replace('.','').datetime()
+                if ctime < self.c_time:
+                    continue
+                self.page_url[post_url] = url
+                print post_url
+                detail_page_urls.append(post_url)
+            detail_page_urls = set(detail_page_urls)
+        return detail_page_urls
+
+    def get_detail_page_info(self, data):
+        '''
+
+        解析详情页信息；参数data可直接调用xpath,re等方法；
+        返回值为字典类型
+        '''
+
+        url = data.response.request.url
         result = []
         pic_urls = []
-        delete_xpath = '''//script|//style|//ignore_js_op/div|//span[@style="display:none"]|//font[@class="jammer"]'''
-        data = self.clear_special_xp(data, delete_xpath)
+
+        # 详情页内解析标题，一般以//text()结尾
+        # title = data.xpath('''//div[@class="layout"]//h2//text()''').text().strip()
+        title = data.xpath('''///div[@class="wzy_nr_top2"]''').text().strip()
+
         gtime = datetime.datetime.utcnow()
-        channel = data.xpath('''//div[@class="site"]/a[3]''').text()
-        title = data.xpath('''//div[@class="wzy_nr_top2"]''').text().strip()
-        source = data.xpath('''//div[@class="wzy_nr_sm"]/div/span[1]''').text().strip()
-        # source = re.findall('来源：(.*?) 作者',source)[0]
-        visit_count = data.xpath('''//div[@class="wzy_nr_sm"]/div/span[3]//text()''').regex('\d+').int()
-        # visit_count = 0
-        reply_count = 0
-        # reply_count = data.xpath('''//a[@id="comment"]/text()''').regex("(\d+)").int()
-        ctime = data.xpath('''//div[@class="wzy_nr_sm"]/div/span[2]/text()''').regex('\d+-\d+-\d+').datetime()
+        # 详情页内解析包含发布时间的模块，一般以//span、//div、//p结尾
+        # ctime = data.xpath('''//div[@class="layout"]//div[@class="left"]''')
+
+        ctime = data.xpath('''//div[@class="wzy_nr_sm"]/div/span[2]''').regex('\d+-\d+-\d+').datetime()
         if ctime < self.c_time:
-            return
-        content = data.xpath('''//div[@class="wzy_nr_zi"]''').text().strip()
-        # imgs = data.xpathall('''//div[@id="MyContent"]//img/@src''')
-        imgs = []
-        if len(imgs) > 0:
-            for i in imgs:
-                img_url = i.text()
-                img_url = urljoin(url, img_url)
-                pic_urls.append(img_url)
-        if not content:
-            content = title
+            return None
+        # 详情页解析当前页面所属频道的面包屑，一般以//text()结尾
+        # source = data.xpath('''//div[@class="add"]//a[last()]//text()''')
+        channel = data.xpath('''//div[@class="site"]/a[3]//text()''').text().strip()
 
-        post = {'title': title,
-                'ctime': ctime,
-                'gtime': gtime,
-                'source': source,
-                'channel': channel,
-                'siteName': self.siteName + '-' + channel,
-                'visitCount': [{'count': visit_count, 'spider_time': gtime}],
-                'replyCount': [{'count': reply_count, 'spider_time': gtime}],
-                'data_db': self.data_db,
-                'url': url,
-                'content': content,
-                }
-        # print post
+        # 详情页解析作者，一般以//text()结尾
+        # source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
+        source = data.xpath('''//div[@class="wzy_nr_s"]/div/span[1]//text()''').text().replace('作者：',
+                                                                                      '').strip() or self.siteName
+
+        # 详情页解析来源，一般以//text()结尾，如没有，此字段=''
+        # retweeted_source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
+        retweeted_source = data.xpath('''//div[@class="wzy_nr_sm"]/div/span[1]//text()''').text().replace('来源：','').strip() or self.siteName
+
+        # 详情页解析来源链接，一般以//@href结尾，如没有，此字段=''
+        # 例：retweeted_status_url = data.xpath('''''')
+        retweeted_status_url = ''
+
+        list_page_url = self.page_url.get(url, '')
+
+        content = ''
+        content_xml = ''
+        # 详情页解析正文，一般以//p、//div、//span等结尾
+        # 例：content1 = data.xpathall('''//div[@class="news-con"]''')
+        content1 = data.xpathall('''//div[@class="wzy_nr_zi"]''')
+        for item in content1:
+            # 此处填写需要排除的（不进行解析）元素，如有多个以‘|’分隔开，如没有，请将‘|？’删除，注意：‘//script’不要删除！
+            # 例：content_str = self.clear_special_xp(item,'''//script''')
+            content_str = self.clear_special_xp(item,
+                                                '''//script|//style|//ignore_js_op/div|//span[@style="display:none"]|//font[@class="jammer"]''')
+            content += content_str.text().strip()
+            content_xml += content_str.data.encode('utf-8')
+
+        content = title if not content else content
+        # 此处解析真跟捏的图片，内容与上方content1后面填写的内容一致，后面的‘//img//@src’不要删除
+        # 例：pic_urls_list = data.xpathall('''//div[@class="news-con"]//img//@src''')
+        pic_urls_list = data.xpathall('''//div[@class="newsinfo-con"]//img//@src''')
+        if pic_urls_list:
+            for i in pic_urls_list:
+                i = i.text().strip()
+                # i = urljoin(url,i)
+                pic_urls.append(i)
+
+        post = {
+            'title': title,
+            'gtime': gtime,
+            'ctime': ctime,
+            'source': source,
+            'retweeted_source': retweeted_source,
+            'channel': channel,
+            'list_page_url': list_page_url,
+            'siteName': self.siteName + '-' + channel,
+            'url': url,
+            'content': content,
+            'content_xml': content_xml,
+        }
         if pic_urls:
-            post.update({'pic_urls': pic_urls})
+            post.update({"pic_urls": pic_urls})
+        if channel == self.siteName:
+            post.update({"siteName": self.siteName})
+        if retweeted_status_url:
+            post.update({'retweeted_status_url': retweeted_status_url})
         result.append(post)
-
         return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     spider = MySpider()
     spider.proxy_enable = False
     spider.init_dedup()
     spider.init_downloader()
 
-    # ------------ get_start_urls() ----------
-    #    urls = spider.get_start_urls()
-    #    for url in urls:
-    #        print url
-
-    # ------------ parse() ----------
-    #    url = 'http://bbs.yantian.com.cn/forum.php?mod=forumdisplay&fid=1690'
-    #    resp = spider.download(url)
-    #    urls = spider.parse(resp)
-    #    for url in urls:
-    #        print url
-
-    # ------------ parse_detail_page() ----------
-
-    # url = 'http://www.kpren.com/thread-75948-1-1.html'
-    url = 'http://www.fengxi.gov.cn/news/Detail.aspx?id=10499&itemid=263'
+    # 此处选填单测功能的详情页完整链接，仅用于测试上方的get_detail_page_info()函数
+    # 例：url = 'http://news.dzwww.com/guoneixinwen/201806/t20180629_17546125.htm'
+    url = '？'
     resp = spider.download(url)
+    # resp.encoding="utf-8"
     res = spider.parse_detail_page(resp, url)
-    for item in res:
-        for k, v in item.iteritems():
-            print k, v
+
+    if res is not None:
+        for item in res:
+            for k, v in item.iteritems():
+                print k, v
