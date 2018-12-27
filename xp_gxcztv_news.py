@@ -77,7 +77,7 @@ class MySpider(spiderDefault.Spider):
                 post_url = item.xpath('''//a[2]//@href''').text().strip()
                 if not post_url:
                     continue
-                # post_url = urljoin("http://www.gxcztv.cn", post_url[8:])
+                post_url = urljoin("http://www.gxcztv.cn", post_url[8:])
                 # 模块内解析详情页时间，一般以//span、//div、//p等结尾，如没有则删除这三行
                 # 例：ctime = item.xpath('''//div[@class="tail"]//span[1]''').datetime()
                 ctime = item.xpath('''//div''').datetime()
@@ -117,12 +117,12 @@ class MySpider(spiderDefault.Spider):
 
         # 详情页解析作者，一般以//text()结尾
         # source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
-        source = data.xpath('''//span[@class="detail_yuan"]//text()''').text().replace('来源：',
+        source = data.xpath('''//span[@class="detail_author"]//text()''').text().replace('作者：',
                                                                                       '').strip() or self.siteName
 
         # 详情页解析来源，一般以//text()结尾，如没有，此字段=''
         # retweeted_source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
-        retweeted_source = data.xpath('''//span[@class="detail_yuan"]//text()''').text().strip() or self.siteName
+        retweeted_source = data.xpath('''//span[@class="d"]//text()''').text().strip() or self.siteName
 
         # 详情页解析来源链接，一般以//@href结尾，如没有，此字段=''
         # 例：retweeted_status_url = data.xpath('''''')
