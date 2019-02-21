@@ -127,6 +127,7 @@ class MySpider(spiderDefault.Spider):
         # source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
         source = data.xpath('''//div[@class="u-newsinfo"]/span[3]//text()''').text().strip() or self.siteName
 
+
         # 详情页解析来源，一般以//text()结尾，如没有，此字段=''
         # retweeted_source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
         retweeted_source = data.xpath('''//div[@class="u-newsinfo"]/span[4]//text()''').text().strip() or self.siteName
@@ -164,8 +165,8 @@ class MySpider(spiderDefault.Spider):
             'title': title,
             'gtime': gtime,
             'ctime': ctime,
-            'source': source,
-            'retweeted_source': retweeted_source,
+            'source': source[9:],
+            'retweeted_source': retweeted_source[12:],
             'channel': channel,
             'list_page_url': list_page_url,
             'siteName': self.siteName + '-' + channel,

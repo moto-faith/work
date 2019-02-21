@@ -4,7 +4,7 @@
 # Copyright (c) 2018  - Beijing Intelligent Star, Inc.  All rights reserved
 
 
-# 	舟山海洋宽频网
+# 	辽源西安区人民政府
 
 
 # 2018-12-12：徐鹏
@@ -29,16 +29,20 @@ class MySpider(spiderDefault.Spider):
         # 类别码，01新闻、02论坛、03博客、04微博 05平媒 06微信  07 视频、99搜索引擎
         self.info_flag = "01"
         # 网站名称
-        self.siteName = '舟山海洋宽频网'
+        self.siteName = '辽源西安区人民政府'
         # 网站一级域名
-        self.site_domain = 'hykpw.com'
+        self.site_domain = 'lyxa.gov.cn'
 
         self.start_urls = [
             # 列表页链接
-
-            'http://www.wifizs.cn/folder1/folder126/',#天下
-            'http://www.wifizs.cn/folder1/folder184/',#娱乐
-            'http://www.wifizs.cn/folder1/folder156/',#活动
+            'http://www.lyxa.gov.cn/xxgk/zwxxgkfl/ldjh/',# 领导讲话
+            'http://www.lyxa.gov.cn/xxgk/zwxxgkfl/gzbg/',#工作报告
+            'http://www.lyxa.gov.cn/xxgk/zwxxgkfl/zcjd/',#政策解读
+            'http://www.lyxa.gov.cn/xxgk/zwgkzdlyxx/zdjsxm/',  #重大建设项目
+            'http://www.lyxa.gov.cn/xxgk/zwgkzdlyxx/czxx/',  #财政信息
+            'http://www.lyxa.gov.cn/xxgk/sjgk/',#数据公开
+            'http://www.lyxa.gov.cn/xxgk/zwxxgkfl/ghjh/',  #规划计划
+            'http://www.lyxa.gov.cn/xxgk/zwgkzdlyxx/ggfwxx/',  #公共服务信息
         ]
         # 网页编码
         # 例：self.encoding = 'gbk'
@@ -70,17 +74,17 @@ class MySpider(spiderDefault.Spider):
             url = data.response.request.url
             # 包含详情页链接和时间的模块，一般以//tr、//li、//div等结尾
             # 例：loops = data.xpathall('''//div[contains(@class,"news-list2")]//li''')
-            loops = data.xpathall('''//div[@class="itb-txt"]''')
+            loops = data.xpathall('''//div[7]/div[2]/div[2]/a''')
 
             for item in loops:  # 这时的item可以看做将解析到的模块当做新的网页打开，页面内只有解析到的模块，以解析的模块为顶级节点进行解析，而不再是标签
 
                 # 此处不要再出现解析模块的Xpath，继续向子节点解析即可
                 # 模块内解析详情页链接，一般以//@href结尾
                 # 例：post_url = item.xpath('''//h3//a//@href''').text().strip()
-                post_url = item.xpath('''//a//@href''').text().strip()
+                post_url = item.xpath('''//@href''').text().strip()
                 if not post_url:
                     continue
-                # post_url = urljoin("http://www.jseti.edu.cn", post_url)
+                post_url = urljoin(url, post_url)
                 # 模块内解析详情页时间，一般以//span、//div、//p等结尾，如没有则删除这三行
                 # 例：ctime = item.xpath('''//div[@class="tail"]//span[1]''').datetime()
                 # ctime = item.xpath('''//td[@align="center"]''').datetime()
@@ -105,29 +109,27 @@ class MySpider(spiderDefault.Spider):
 
         # 详情页内解析标题，一般以//text()结尾
         # title = data.xpath('''//div[@class="layout"]//h2//text()''').text().strip()
-        title = data.xpath('''//div[@class="article-title"]/h1//text()''').text().strip()
-        if '点播' in title:
-            return None
+        title = data.xpath('''//h2[@class="sywzy_h2"]//text()''').text().strip()
 
         gtime = datetime.datetime.utcnow()
         # 详情页内解析包含发布时间的模块，一般以//span、//div、//p结尾
         # ctime = data.xpath('''//div[@class="layout"]//div[@class="left"]''')
 
-        ctime = data.xpath('''//span[@class="time"]//text()''').regex('\d+-\d+-\d+').datetime()
+        ctime = data.xpath('''//div[@class="sywzy_xbt wxx_neirong_timecent"]/span[1]''').regex('\d+-\d+-\d+').datetime()
         # ctime = gtime
         if ctime < self.c_time:
             return None
         # 详情页解析当前页面所属频道的面包屑，一般以//text()结尾
         # source = data.xpath('''//div[@class="add"]//a[last()]//text()''')
-        channel = data.xpath('''//ul[@class="cell_198_ clearfix"]/li[3]/a//text()''').text().strip()
+        channel = data.xpath('''//div[@class="ny_subnav"]//a[3]/text()''').text().strip()
 
         # 详情页解析作者，一般以//text()结尾
         # source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
-        source = self.siteName
+        source =  self.siteName
 
         # 详情页解析来源，一般以//text()结尾，如没有，此字段=''
         # retweeted_source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
-        retweeted_source = data.xpath('''//span[@class="origin"]//text()''').text().strip() or self.siteName
+        retweeted_source =data.xpath('''//div[@class="sywzy_xbt wxx_neirong_timecent"]/span[2]''').text().strip() or self.siteName
 
         # 详情页解析来源链接，一般以//@href结尾，如没有，此字段=''
         # 例：retweeted_status_url = data.xpath('''''')
@@ -139,7 +141,7 @@ class MySpider(spiderDefault.Spider):
         content_xml = ''
         # 详情页解析正文，一般以//p、//div、//span等结尾
         # 例：content1 = data.xpathall('''//div[@class="news-con"]''')
-        content1 = data.xpathall('''//div[@class="article-main"]''')
+        content1 = data.xpathall('''//div[@class="TRS_Editor"]''')
         for item in content1:
             # 此处填写需要排除的（不进行解析）元素，如有多个以‘|’分隔开，如没有，请将‘|？’删除，注意：‘//script’不要删除！
             # 例：content_str = self.clear_special_xp(item,'''//script''')
@@ -151,7 +153,7 @@ class MySpider(spiderDefault.Spider):
         content = title if not content else content
         # 此处解析真跟捏的图片，内容与上方content1后面填写的内容一致，后面的‘//img//@src’不要删除
         # 例：pic_urls_list = data.xpathall('''//div[@class="news-con"]//img//@src''')
-        pic_urls_list = data.xpathall('''//div[@class="article-main"]//img/@src''')
+        pic_urls_list = data.xpathall('''//div[@class="TRS_Editor"]//img/@src''')
         if pic_urls_list:
             for i in pic_urls_list:
                 i = i.text().strip()
@@ -163,7 +165,7 @@ class MySpider(spiderDefault.Spider):
             'gtime': gtime,
             'ctime': ctime,
             'source': source,
-            'retweeted_source': retweeted_source[7:],
+            'retweeted_source': retweeted_source,
             'channel': channel,
             'list_page_url': list_page_url,
             'siteName': self.siteName + '-' + channel,

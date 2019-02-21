@@ -37,6 +37,12 @@ class MySpider(spiderDefault.Spider):
 
             # 列表页链接
             'http://www.xghr.net.cn/news/news-list.php?id=1',
+            'http://www.xghr.net.cn/news/news-list.php?id=2',
+            'http://www.xghr.net.cn/news/news-list.php?id=3',
+            'http://www.xghr.net.cn/news/news-list.php?id=4',
+            'http://www.xghr.net.cn/news/news-list.php?id=5',
+            'http://www.xghr.net.cn/news/news-list.php?id=6',
+            'http://www.xghr.net.cn/news/news-list.php?id=7',
         ]
         # 网页编码
         # 例：self.encoding = 'gbk'
@@ -117,12 +123,12 @@ class MySpider(spiderDefault.Spider):
 
         # 详情页解析作者，一般以//text()结尾
         # source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
-        source = data.xpath('''//div[@class="nytext-1"]//text()''').text().replace('来源：',
+        source = data.xpath('''//div[@class="nytext-1"]//text()''').text().replace('作者：',
                                                                                       '').strip() or self.siteName
 
         # 详情页解析来源，一般以//text()结尾，如没有，此字段=''
         # retweeted_source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
-        retweeted_source = data.xpath('''//div[@class="nytext-1"]//text()''').text().strip() or self.siteName
+        retweeted_source = data.xpath('''//div[@class="nytext-1"]//text()''').text().replace('来源：','').strip() or self.siteName
 
         # 详情页解析来源链接，一般以//@href结尾，如没有，此字段=''
         # 例：retweeted_status_url = data.xpath('''''')

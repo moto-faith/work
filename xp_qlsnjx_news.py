@@ -113,16 +113,20 @@ class MySpider(spiderDefault.Spider):
             return None
         # 详情页解析当前页面所属频道的面包屑，一般以//text()结尾
         # source = data.xpath('''//div[@class="add"]//a[last()]//text()''')
-        channel = data.xpath('''//div[@class="biaot-1"]//text()''').text().strip()
+        channel = data.xpath('''//li[@class="currclass"]//text()''').text().strip()
 
         # 详情页解析作者，一般以//text()结尾
         # source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
-        source = data.xpath('''//div[@class="nytext-1"]//text()''').text().replace('来源：',
-                                                                                      '').strip() or self.siteName
+        # source = data.xpath('''//div[@class="nytext-1"]//text()''').text().replace('作者：',
+        #                                                                               '').strip() or self.siteName
+        source = data.xpath('''//div[@class="nytext-1"]//text()''').text()
+        source=re.findall('作者：(.*?)日期',source)[0]
 
         # 详情页解析来源，一般以//text()结尾，如没有，此字段=''
         # retweeted_source = data.xpath('''//div[@id="xl-headline"]//div[@class="left"]//text()''')
-        retweeted_source = data.xpath('''//div[@class="nytext-1"]//text()''').text().strip() or self.siteName
+        # retweeted_source = data.xpath('''//div[@class="nytext-1"]//text()''').text().strip() or self.siteName
+        retweeted_source = data.xpath('''//div[@class="nytext-1"]//text()''').text()
+        retweeted_source=re.findall('来源：(.*?)作者',retweeted_source)[0]
 
         # 详情页解析来源链接，一般以//@href结尾，如没有，此字段=''
         # 例：retweeted_status_url = data.xpath('''''')

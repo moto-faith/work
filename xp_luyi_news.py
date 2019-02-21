@@ -36,7 +36,10 @@ class MySpider(spiderDefault.Spider):
         self.start_urls = [
 
             # 列表页链接
-            'http://www.luyi.gov.cn/index.php/cms/item-list-category-230.shtml'
+            'http://www.luyi.gov.cn/index.php/cms/item-list-category-230.shtml',
+            'http://www.luyi.gov.cn/index.php/cms/item-list-category-226.shtml',
+            'http://www.luyi.gov.cn/index.php/cms/item-list-category-231.shtml',
+            'http://www.luyi.gov.cn/index.php/cms/item-list-category-785.shtml',
         ]
         # 网页编码
         # 例：self.encoding = 'gbk'
@@ -67,21 +70,21 @@ class MySpider(spiderDefault.Spider):
             url = data.response.request.url
             # 包含详情页链接和时间的模块，一般以//tr、//li、//div等结尾
             # 例：loops = data.xpathall('''//div[contains(@class,"news-list2")]//li''')
-            loops = data.xpathall('''//ul[@class="label_ul_b"]//li''')
+            loops = data.xpathall('''//ul[@class="label_ul_b"]//li//a''')
             for item in loops:  # 这时的item可以看做将解析到的模块当做新的网页打开，页面内只有解析到的模块，以解析的模块为顶级节点进行解析，而不再是标签
 
                 # 此处不要再出现解析模块的Xpath，继续向子节点解析即可
                 # 模块内解析详情页链接，一般以//@href结尾
                 # 例：post_url = item.xpath('''//h3//a//@href''').text().strip()
-                post_url = item.xpath('''//a//@href''').text().strip()
+                post_url = item.xpath('''//@href''').text().strip()
                 if not post_url:
                     continue
                 # post_url = urljoin("http://www.jx216.com/", post_url)
                 # 模块内解析详情页时间，一般以//span、//div、//p等结尾，如没有则删除这三行
                 # 例：ctime = item.xpath('''//div[@class="tail"]//span[1]''').datetime()
-                ctime = item.xpath('''//span''').datetime()
-                if ctime < self.c_time:
-                    continue
+                # ctime = item.xpath('''//span''').datetime()
+                # if ctime < self.c_time:
+                #     continue
                 self.page_url[post_url] = url
                 print post_url
                 detail_page_urls.append(post_url)
