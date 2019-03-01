@@ -17,12 +17,11 @@ from urlparse import urljoin
 from db import DB
 import MySQLdb
 import uuid
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+
 import requests
 import copy
 import urllib3
+
 
 class MySpider(spider.Spider):
     def __init__(self,
@@ -44,19 +43,19 @@ class MySpider(spider.Spider):
         self.site_domain = 'jsggzy.jszwfw.gov.cn'
         self.dedup_uri = None
         self.headers = {
-            'Accept': 'application/json, text/javascript, */*; q=0.01',
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
-            'Connection': 'keep-alive',
+            # 'Accept': 'application/json, text/javascript, */*; q=0.01',
+            # 'Accept-Encoding': 'gzip, deflate',
+            # 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            # 'Connection': 'keep-alive',
             # 'Content-Length': '482',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            # 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
             # 'Cookie': 'Hm_lvt_f7811e67b48a98d4be5d826f169a8075=1541662109,1542003546,1542078731; JSESSIONID=CB7535F288B576CAD7CFC351DDE08F35; Hm_lpvt_f7811e67b48a98d4be5d826f169a8075=1542086824',
             # 'DNT': '1',
             # 'Host': 'jsggzy.jszwfw.gov.cn',
             # 'Origin': 'http://jsggzy.jszwfw.gov.cn',
-            'Referer': 'http://jsggzy.jszwfw.gov.cn/jyxx/tradeInfonew.html',
+            # 'Referer': 'http://jsggzy.jszwfw.gov.cn/jyxx/tradeInfonew.html',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.67 Safari/537.36',
-            'X-Requested-With': 'XMLHttpRequest',
+            # 'X-Requested-With': 'XMLHttpRequest',
             # "Content-Type":"application/x-www-form-urlencoded",
 
             # "Referer":"https://www.bidcenter.com.cn",
@@ -64,30 +63,32 @@ class MySpider(spider.Spider):
 
         }
         # self.proxy_enable = "http://spider-ip-sync.istarshine.net.cn/proxy_100ms.txt"
-        #self.proxy_url = 'http://spider-ip-sync.istarshine.net.cn/proxy_100ms.txt'
+        # self.proxy_url = 'http://spider-ip-sync.istarshine.net.cn/proxy_100ms.txt'
         self.request_headers = {'headers': self.headers}
-        self.conn_config = redis.StrictRedis.from_url ('redis://192.168.1.34/1')
+        self.conn_config = redis.StrictRedis.from_url('redis://192.168.1.34/1')
         redis_ip = self.conn_config.get("redis_ip")
-        redis_db = self.conn_config.get ("redis_db")
+        redis_db = self.conn_config.get("redis_db")
         mysql_ip = self.conn_config.get("mysql_ip")
-        mysql_databases = self.conn_config.get ("mysql_databases")
+        mysql_databases = self.conn_config.get("mysql_databases")
         mysql_username = self.conn_config.get("mysql_username")
-        mysql_password = self.conn_config.get ("mysql_password")
-        mysql_list_info = self.conn_config.get ("mysql_table1")
-        result1 = self.conn_config.get ("mysql_list_model_filter")
-        base2 = self.conn_config.get ("mysql_detail_info")
+        mysql_password = self.conn_config.get("mysql_password")
+        mysql_list_info = self.conn_config.get("mysql_table1")
+        result1 = self.conn_config.get("mysql_list_model_filter")
+        base2 = self.conn_config.get("mysql_detail_info")
         try:
-            self.conn = redis.StrictRedis.from_url ('redis://{0}/{1}'.format(redis_ip,redis_db))
+            self.conn = redis.StrictRedis.from_url('redis://{0}/{1}'.format(redis_ip, redis_db))
         except:
             self.url_db = None
-        self.db = DB ().create ('mysql://{0}:{1}@{2}:3306/{3}'.format(mysql_username,mysql_password,mysql_ip,mysql_databases))
+        self.db = DB().create(
+            'mysql://{0}:{1}@{2}:3306/{3}'.format(mysql_username, mysql_password, mysql_ip, mysql_databases))
         self.table = mysql_list_info
         self.result1 = result1
         self.base2 = base2
 
         self.sess = requests.session()
 
-        self.all= {}
+        self.all = {}
+
     def get_start_urls(self, data=None):
         '''
         返回start_urls
@@ -114,7 +115,7 @@ class MySpider(spider.Spider):
             # print "str_urls",str_urls
 
             # dict_post = json.loads(str_urls)
-            dict_post =str_urls
+            dict_post = str_urls
             try:
                 detailUrl = dict_post.get("detailUrl")
             except Exception as e:
@@ -128,7 +129,7 @@ class MySpider(spider.Spider):
         try:
             response.encoding = self.encoding
             unicode_html_body = response.text
-            data = htmlparser.Parser (unicode_html_body)
+            data = htmlparser.Parser(unicode_html_body)
         except Exception, e:
             return []
 
@@ -138,83 +139,85 @@ class MySpider(spider.Spider):
         print ctime
 
         if data:
-            content_xmls = data.xpathall (
+            content_xmls = data.xpathall(
                 '''//div[@class="ewb-trade-mid"]''')
             content_xml = ""
             for i in content_xmls:
                 content_xml += i.data
 
             # 2招标（中标）内容
-            contents = data.xpathall (
+            contents = data.xpathall(
                 '''//div[@class="ewb-trade-mid"]//text()''')  # 内容
             content = ''
             for i in contents:
-                content += i.text ().strip ()
+                content += i.text().strip()
 
-            content = self.makecontent (content)
+            content = self.makecontent(content)
             # 4采购人
-            tender = self.getPurchasingPersonName (unicode_html_body, content_xml)
+            tender = self.getPurchasingPersonName(unicode_html_body, content_xml)
             # 中标人
-            bidder = self.getPurchasingPerson (unicode_html_body, content_xml)
+            bidder = self.getPurchasingPerson(unicode_html_body, content_xml)
             # 价格
-            price = self.getprice (unicode_html_body, content_xml)
+            price = self.getprice(unicode_html_body, content_xml)
 
             post = {
-                "id":dict_post.get ("id"),
-                "uuid":dict_post.get ("uuid") ,  # md5
+                "id": dict_post.get("id"),
+                "uuid": dict_post.get("uuid"),  # md5
                 "detailUrl": detail_url,  # url
-                "name": dict_post.get ("name"),  # 标题
-                "location": dict_post.get ("location"),  # 地区
-                "publicTime": dict_post.get ("publicTime"),  # 公布时间
-                "tag": dict_post.get ("tag"),  # 标签
-                "site": self.site_domain,#域名
-                "siteName": self.siteName,#域名名稱
-                "ctime": ctime,#采集時間
-                "service":dict_post.get ("service"),
-                "industry":dict_post.get ("industry"),
-                "price":price,#價格
-                "tender":tender,#招標人
-                "bidder":bidder,#中標人
+                "name": dict_post.get("name"),  # 标题
+                "location": dict_post.get("location"),  # 地区
+                "publicTime": dict_post.get("publicTime"),  # 公布时间
+                "tag": dict_post.get("tag"),  # 标签
+                "site": self.site_domain,  # 域名
+                "siteName": self.siteName,  # 域名名稱
+                "ctime": ctime,  # 采集時間
+                "service": dict_post.get("service"),
+                "industry": dict_post.get("industry"),
+                "price": price,  # 價格
+                "tender": tender,  # 招標人
+                "bidder": bidder,  # 中標人
 
-                "content":content,
+                "content": content,
 
             }
 
-
-            dic = self.handle_post (post)
+            dic = self.handle_post(post)
             try:
-                self.db.table (self.base2).add (dic)
+                self.db.table(self.base2).add(dic)
                 y = {"tf": "0"}
-                self.db.table (self.result1).where ('''uuid="{0}"'''.format (dict_post.get ("uuid"))).update (y)
+                self.db.table(self.result1).where('''uuid="{0}"'''.format(dict_post.get("uuid"))).update(y)
             except Exception as e:
                 print e
 
-    def handle_post(self,post):
+    def handle_post(self, post):
         post = copy.deepcopy(post)
-        for k,v in post.iteritems():
-            print k,v
+        for k, v in post.iteritems():
+            print k, v
             if isinstance(v, unicode):
                 v = v.encode("utf8")
-            if not isinstance(v,str) and not isinstance(v, int) and not isinstance(v, float):
+            if not isinstance(v, str) and not isinstance(v, int) and not isinstance(v, float):
                 v = json.dumps(v)
-            try:v = MySQLdb.escape_string(v)
-            except:pass
-            post.update({k:v})
+            try:
+                v = MySQLdb.escape_string(v)
+            except:
+                pass
+            post.update({k: v})
         return post
 
-    def makecontent(self,content):
+    def makecontent(self, content):
         # print "before:", content
-        content = re.sub (" |\t|\n|\r|\r\n", "", content).strip ()
-        content = content.replace (" ", "").strip ()
-        content = ''.join (content.split (" "))
+        content = re.sub(" |\t|\n|\r|\r\n", "", content).strip()
+        content = content.replace(" ", "").strip()
+        content = ''.join(content.split(" "))
         # print "after", content
         return content
 
-    def getPurchasingPersonName(self,content, content_xml):
+    def getPurchasingPersonName(self, content, content_xml):
         # 4采购人
         # 4采购人
         try:
-            purchasing_person_name = re.findall('项目经理姓名</td>\s\s<td class="ClassWhite" ColSpan="3">(.*?)</td>', content, re.M)[0]
+            purchasing_person_name = \
+            re.findall('项目经理姓名</td>\s\s<td class="ClassWhite" ColSpan="3">(.*?)</td>', content, re.M)[0]
         except:
             try:
                 purchasing_person_name = re.findall("采购人：(.*?)地", content, re.M)[0]
@@ -238,33 +241,36 @@ class MySpider(spider.Spider):
         # print purchasing_person_name
         return purchasing_person_name
 
-    def getPurchasingPerson(self,content, content_xml):
+    def getPurchasingPerson(self, content, content_xml):
         try:
-            purchasing_person_name = re.findall ('代理机构</td>\s\s<td class="ClassWhite" ColSpan="6">(.*?)</td>', content, re.M)[0]
+            purchasing_person_name = \
+            re.findall('代理机构</td>\s\s<td class="ClassWhite" ColSpan="6">(.*?)</td>', content, re.M)[0]
 
         except:
             try:
-                purchasing_person_name = re.findall ("第一中签候选人名称:(.*?)<", content_xml, re.M)[0]
+                purchasing_person_name = re.findall("第一中签候选人名称:(.*?)<", content_xml, re.M)[0]
             except:
                 try:
-                    purchasing_person_name = re.findall ("第一中标(成交)候选人名称:(.*?)<", content_xml, re.M)[0]
+                    purchasing_person_name = re.findall("第一中标(成交)候选人名称:(.*?)<", content_xml, re.M)[0]
                 except:
                     purchasing_person_name = ''
-        return purchasing_person_name.replace ("：", "").replace (":", "").strip ()
+        return purchasing_person_name.replace("：", "").replace(":", "").strip()
 
-    def getprice(self,content, content_xml):
+    def getprice(self, content, content_xml):
         try:
-            purchasing_person_name = re.findall ('中标价</td>\s\s<td class="ClassWhite" ColSpan="3">(.*?)<', content_xml, re.M)[0]
+            purchasing_person_name = \
+            re.findall('中标价</td>\s\s<td class="ClassWhite" ColSpan="3">(.*?)<', content_xml, re.M)[0]
         except:
             try:
-                purchasing_person_name = re.findall ("金额(.*?)<", content_xml, re.M)[0]
+                purchasing_person_name = re.findall("金额(.*?)<", content_xml, re.M)[0]
             except:
                 try:
-                    purchasing_person_name = re.findall ("中标价(.*?)中标", content, re.M)[0]
+                    purchasing_person_name = re.findall("中标价(.*?)中标", content, re.M)[0]
                 except:
                     purchasing_person_name = ''
 
-        return purchasing_person_name.replace ("：", "").replace (":", "").strip ()
+        return purchasing_person_name.replace("：", "").replace(":", "").strip()
+
 
 if __name__ == '__main__':
     spider = MySpider()
@@ -277,11 +283,10 @@ if __name__ == '__main__':
     # resp = spider.download(url)
     # res = spider.parse(resp, url)
 
-
     # ------------ parse_detail_page() ----------
-    # url = "http://www.bidcenter.com.cn/zbpage-4-%E6%B1%9F%E8%8B%8F-1.html"
-    # resp = spider.download(url)
-    # res = spider.parse_detail_page(resp, url)
+    url = "http://jsggzy.jszwfw.gov.cn/jyxx/003001/003001001/20190118/31b417e6-d8fc-4e06-8d9e-b0c5d0d1906d.html"
+    resp = spider.download(url)
+    res = spider.parse_detail_page(resp, url)
     # for item in res:
     #     for k, v in item.iteritems():
     #         print k, v

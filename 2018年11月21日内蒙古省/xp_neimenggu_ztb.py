@@ -95,13 +95,19 @@ class MySpider(spider.Spider):
         # except Exception, e:
         #     return ([], None, None)
         url_list = [
-            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=1&byf_page=1&fun=cggg&_=1542766056742',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=1&byf_page=1&fun=cggg',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=1&byf_page=2&fun=cggg',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=1&byf_page=3&fun=cggg',
             # 工程建设招标公告
 
-            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=2&byf_page=1&fun=cggg&_=1542766056743',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=2&byf_page=1&fun=cggg',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=2&byf_page=2&fun=cggg',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=2&byf_page=3&fun=cggg',
             # 工程建设招标澄清
 
-            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=3&byf_page=1&fun=cggg&_=1542766056744',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=3&byf_page=1&fun=cggg',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=3&byf_page=2&fun=cggg',
+            'http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=3&byf_page=3&fun=cggg',
             # 工程建设中标公告
 
         ]
@@ -125,14 +131,20 @@ class MySpider(spider.Spider):
 #         titles = data.xpathall('//a[@class="btn btn-default article-list-single"]/@title')
 #         links = data.xpathall('//a[@class="btn btn-default article-list-single"]/@href')
 #         dates = data.xpathall('//span[@class="article-list-date"]/text()')
-        if from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=1&byf_page=1&fun=cggg&_=1542766056742":
+        if from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=1&byf_page=1&fun=cggg":
             tag = "招标公告"
-        elif from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=2&byf_page=1&fun=cggg&_=1542766056743":
+        elif from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=1&byf_page=2&fun=cggg":
+            tag = "招标公告"
+        elif from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=1&byf_page=3&fun=cggg":
+            tag = "招标公告"
+        elif from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=2&byf_page=1&fun=cggg":
             tag = "变更通知"
-        elif from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=3&byf_page=1&fun=cggg&_=1542766056744":
-            tag = "中标公告"
+        elif from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=2&byf_page=2&fun=cggg":
+            tag = "变更通知"
+        elif from_tag_url == "http://www.nmgp.gov.cn/zfcgwslave/web/index.php?r=zfcgw%2Fanndata&type_name=2&byf_page=3&fun=cggg":
+            tag = "变更通知"
         else:
-            tag = "招标公告"
+            tag = "中标公告"
 
         titles = re.findall('"TITLE_ALL":"(.*?)"', unicode_html_body)
         dates = re.findall('"SUBDATE":"(.*?)"', unicode_html_body)

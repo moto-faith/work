@@ -96,14 +96,21 @@ class MySpider(spider.Spider):
         #     return ([], None, None)
         url_list = [
             'http://www.sdggzyjy.gov.cn/queryContent-jyxxgk.jspx?channelId=78',
+            'http://www.sdggzyjy.gov.cn/queryContent_2-jyxxgk.jspx?channelId=78',
+            'http://www.sdggzyjy.gov.cn/queryContent_3-jyxxgk.jspx?channelId=78',
             #工程建设
             'http://www.sdggzyjy.gov.cn/queryContent-jyxxgk.jspx?channelId=80',
+            'http://www.sdggzyjy.gov.cn/queryContent_2-jyxxgk.jspx?channelId=80',
+            'http://www.sdggzyjy.gov.cn/queryContent_3-jyxxgk.jspx?channelId=80',
             #土地使用权
             'http://www.sdggzyjy.gov.cn/queryContent-jyxxgk.jspx?channelId=81',
             #矿业出让权
             'http://www.sdggzyjy.gov.cn/queryContent-jyxxgk.jspx?channelId=79',
+            'http://www.sdggzyjy.gov.cn/queryContent_2-jyxxgk.jspx?channelId=79',
+            'http://www.sdggzyjy.gov.cn/queryContent_3-jyxxgk.jspx?channelId=79',
             #政府采购
-            'http://www.sdggzyjy.gov.cn/queryContent-jyxxgk.jspx?channelId=79',
+            'http://www.sdggzyjy.gov.cn/queryContent_2-jyxxgk.jspx',
+            'http://www.sdggzyjy.gov.cn/queryContent_1-jyxxgk.jspx',
             #国有产权
         ]
 

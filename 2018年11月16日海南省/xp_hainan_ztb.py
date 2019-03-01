@@ -96,11 +96,20 @@ class MySpider(spider.Spider):
         #     return ([], None, None)
         url_list = [
             'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgg/index.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgg/index_2.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgg/index_3.jhtml',
             'http://zw.hainan.gov.cn/ggzy/ggzy/cggg/index.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cggg/index_2.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cggg/index_3.jhtml',
             # 工程建设招标公告
 
             'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgs/index.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgs/index_2.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgs/index_3.jhtml',
             'http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index_2.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index_3.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index_4.jhtml',
             # 工程建设中标公告
 
         ]
@@ -120,12 +129,20 @@ class MySpider(spider.Spider):
 
         zhaobgg = [
             'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgg/index.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgg/index_2.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgg/index_3.jhtml',
             'http://zw.hainan.gov.cn/ggzy/ggzy/cggg/index.jhtml',
-            # 工程建设招标公告
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cggg/index_2.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cggg/index_3.jhtml',
         ]
         zhongbgg = [
             'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgs/index.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgs/index_2.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/jgzbgs/index_3.jhtml',
             'http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index_2.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index_3.jhtml',
+            'http://zw.hainan.gov.cn/ggzy/ggzy/cgzbgg/index_4.jhtml',
             # 工程建设中标公告
         ]
         if from_tag_url in zhaobgg:

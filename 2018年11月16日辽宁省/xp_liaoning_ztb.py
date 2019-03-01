@@ -44,14 +44,14 @@ class MySpider(spider.Spider):
         self.site_domain = 'lnzb.cn'
         self.dedup_uri = None
         self.headers = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
-            "Connection": "keep-alive",
+            # "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8",
+            # "Accept-Encoding": "gzip, deflate, br",
+            # "Accept-Language": "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3",
+            # "Connection": "keep-alive",
             # "Cookie": "_gscu_1811078948=41663282vx6ent53; ASP.NET_SessionId=x01pkg455lrliaiky4l3av45; _gscbrs_1811078948=1; _gscs_1811078948=t42005267lfkkmo53|pv:3; cookies=89314150",
             # bidguid=96984f59-dcbf-491f-9bab-a8500ea4f12d; UM_distinctid=16492ad9f0ba4-0c0a2c42949499-444a002e-1fa400-16492ad9f0c2aa; _uab_collina=153146928107553947905014; _umdata=BA335E4DD2FD504F1EDA57F02CFE1964FF30093E1A99816EA3422927037FEEE27E6061217D847EA9CD43AD3E795C914CF0452994C1509D8EB7661DBFB2FCDD56; isshowtcc=isshowtcc; BIDCTER_USERNAME=UserName=jingyingbu666; keywords=%u601D%u79D1; keywords==%e6%80%9d%e7%a7%91; CNZZDATA888048=cnzz_eid%3D1104734771-1531464092-%26ntime%3D1531696377; Hm_lvt_9954aa2d605277c3e24cb76809e2f856=1531469210,1531700960; Hm_lpvt_9954aa2d605277c3e24cb76809e2f856=1531701399; aspcn=id=1277449&name=jingyingbu666&vip=3&company=%e8%8b%8f%e4%ba%a4%e7%a7%91%e9%9b%86%e5%9b%a2%e8%82%a1%e4%bb%bd%e6%9c%89%e9%99%90%e5%85%ac%e5%8f%b8&lianxiren=%e6%b8%b8%e7%8e%89%e7%9f%b3&tel=025-86577542&email=yys@jsti.com&diqu=&Token=65D51EA060022C3EFFD2BE6B4C79852284FE102150132499D822DB4759BA5217232FAA3570FA85C59F0D4B7BA2A98C4B; PASSKEY=Token=65D51EA060022C3EFFD2BE6B4C79852284FE102150132499D822DB4759BA5217232FAA3570FA85C59F0D4B7BA2A98C4B',
             # "Host": "www.fjggzyjy.cn",
-            "Upgrade-Insecure-Requests": "1",
+            # "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36",
 
             # "Content-Type":"application/x-www-form-urlencoded",
@@ -164,8 +164,9 @@ class MySpider(spider.Spider):
         for i in text:
             title = i[0]
             link = i[1]
-            date = i[2]
-            date = str(date).replace("-", "")
+            # date = i[2]
+            # date = str(date).replace("-", "")
+
 
 #         titles = data.xpathall('//a[@class="btn btn-default article-list-single"]/@title')
 #         links = data.xpathall('//a[@class="btn btn-default article-list-single"]/@href')
@@ -179,6 +180,7 @@ class MySpider(spider.Spider):
                 continue
             uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, link)) + str(uuid.uuid3(uuid.NAMESPACE_DNS, link))
             ctime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            date = datetime.datetime.now().strftime('%Y%m%d')
             location = "辽宁省"
             service = ''
             industry = ""

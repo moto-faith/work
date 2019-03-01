@@ -17,9 +17,7 @@ from urlparse import urljoin
 from db import DB
 import MySQLdb
 import uuid
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+
 import requests
 import copy
 import urllib3
@@ -138,16 +136,17 @@ class MySpider(spider.Spider):
             content_xmls = data.xpathall (
                 '''//div[@class="ewb-detail-box"]''')
             content_xml = ""
-            for i in content_xmls:
-                content_xml += i.data
+            for xmls in content_xmls:
+                content_xml += xmls.data
 
             # 2招标（中标）内容
             contents = data.xpathall (
                 '''//div[@class="ewb-detail-box"]//text()''')  # 内容
             content = ''
-            for i in contents:
-                content += i.text ().strip ()
-
+            for tent in contents:
+                content += tent.text ().strip ()
+            if content=='':
+                content = self.siteName
             content = self.makecontent (content)
             # 4采购人
             tender = self.getPurchasingPersonName (content, content_xml)

@@ -19,9 +19,7 @@ from urlparse import urljoin
 from db import DB
 import MySQLdb
 import uuid
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+
 import requests
 import copy
 import urllib3
@@ -46,11 +44,11 @@ class MySpider(spider.Spider):
         self.site_domain = 'shcpe.cn'
         self.dedup_uri = None
         self.headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'Accept': 'text/html, application/xhtml+xml, image/jxr, */*',
             'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            # 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
             # 'Cache-Control': 'max-age=0',
-            'Connection': 'keep-alive',
+            # 'Connection': 'keep-alive',
             # 'Cookie': 'UM_distinctid=1670593cdcc4f5-0800ff5ff60ef9-594d2a16-15f900-1670593cdce395; CNZZDATA1264557630=446493554-1541984678-%7C1541984678',
             # 'DNT': '1',
             # 'Host': 'www.scggzy.gov.cn',
@@ -147,7 +145,7 @@ class MySpider(spider.Spider):
                 '''//body[@class="MainBody"]//text()''')  # 内容
             content = ''
             for i in contents:
-                content += i.text ().strip ()
+                content += i.text ().strip () + " "
 
             content = self.makecontent (content)
             # 4采购人
@@ -273,16 +271,16 @@ if __name__ == '__main__':
     spider.init_downloader()
     # ------------ parse() ----------
     # print "开始登录"
-    url = "http://changde.hnsggzy.com/jygkjygg/452957.jhtml"
-    resp = spider.download(url)
-    res = spider.parse(resp, url)
+    # url = "http://changde.hnsggzy.com/jygkjygg/452957.jhtml"
+    # resp = spider.download(url)
+    # res = spider.parse(resp, url)
 
 
     # ------------ parse_detail_page() ----------
-    # url = "http://www.bidcenter.com.cn/zbpage-4-%E6%B1%9F%E8%8B%8F-1.html"
-    # resp = spider.download(url)
+    url = "https://www.ciac.sh.cn/NetInterBidweb/GKTB/DefaultV2011.aspx?gkzbXh=153989"
+    resp = spider.download(url)
     res = spider.parse_detail_page(resp, url)
-    for item in res:
-        for k, v in item.iteritems():
-            print k, v
+    # for item in res:
+    #     for k, v in item.iteritems():
+    #         print k, v
 

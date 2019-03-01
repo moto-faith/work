@@ -97,18 +97,32 @@ class MySpider(spider.Spider):
         url_list = [
             'http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%2F%E8%B5%84%E5%AE%A1%E5%85%AC%E5%91%8A',
             # 工程建设招标公告
+            'http://www.hnsggzy.com/queryContent_2-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%2F%E8%B5%84%E5%AE%A1%E5%85%AC%E5%91%8A',
+            # 工程建设招标公告
+            'http://www.hnsggzy.com/queryContent_3-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%2F%E8%B5%84%E5%AE%A1%E5%85%AC%E5%91%8A',
+            # 工程建设招标公告
 
             'http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%E6%BE%84%E6%B8%85',
+            # 工程建设招标澄清
+            'http://www.hnsggzy.com/queryContent_2-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%E6%BE%84%E6%B8%85',
+            # 工程建设招标澄清
+            'http://www.hnsggzy.com/queryContent_3-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%E6%BE%84%E6%B8%85',
             # 工程建设招标澄清
 
             'http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=846&ext=%E4%B8%AD%E6%A0%87%E5%80%99%E9%80%89%E4%BA%BA%E5%85%AC%E7%A4%BA',
             # 工程建设中标候选人公示
+            'http://www.hnsggzy.com/queryContent_2-jygk.jspx?channelId=846&ext=%E4%B8%AD%E6%A0%87%E5%80%99%E9%80%89%E4%BA%BA%E5%85%AC%E7%A4%BA',
 
             'http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=846&ext=%E4%B8%AD%E6%A0%87%E7%BB%93%E6%9E%9C%E5%85%AC%E5%91%8A',
             # 工程建设中标结果公告
 
             'http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=853',
             # 政府采购采购公告
+            'http://www.hnsggzy.com/queryContent_2-jygk.jspx?channelId=853',
+            # 政府采购采购公告
+            'http://www.hnsggzy.com/queryContent_3-jygk.jspx?channelId=853',
+            # 政府采购采购公告
+
 
             'http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=854',
             # 政府采购更正事项
@@ -139,13 +153,27 @@ class MySpider(spider.Spider):
 #         dates = data.xpathall('//span[@class="article-list-date"]/text()')
         if from_tag_url == "http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%2F%E8%B5%84%E5%AE%A1%E5%85%AC%E5%91%8A":
             tag = "招标公告"
+        elif from_tag_url == 'http://www.hnsggzy.com/queryContent_2-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%2F%E8%B5%84%E5%AE%A1%E5%85%AC%E5%91%8A':
+            tag = "招标公告"
+        elif from_tag_url == 'http://www.hnsggzy.com/queryContent_3-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%2F%E8%B5%84%E5%AE%A1%E5%85%AC%E5%91%8A':
+            tag = "招标公告"
         elif from_tag_url == "http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%E6%BE%84%E6%B8%85":
             tag = "变更通知"
+        elif from_tag_url == 'http://www.hnsggzy.com/queryContent_2-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%E6%BE%84%E6%B8%85':
+            tag = "变更通知"
+        elif from_tag_url == 'http://www.hnsggzy.com/queryContent_3-jygk.jspx?channelId=846&ext=%E6%8B%9B%E6%A0%87%E6%BE%84%E6%B8%85':
+            tag = "变更通知"
         elif from_tag_url == "http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=846&ext=%E4%B8%AD%E6%A0%87%E5%80%99%E9%80%89%E4%BA%BA%E5%85%AC%E7%A4%BA":
-            tag = "招标公告"
+            tag = "中标公告"
+        elif from_tag_url == 'http://www.hnsggzy.com/queryContent_2-jygk.jspx?channelId=846&ext=%E4%B8%AD%E6%A0%87%E5%80%99%E9%80%89%E4%BA%BA%E5%85%AC%E7%A4%BA':
+            tag = "中标公告"
         elif from_tag_url == "http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=846&ext=%E4%B8%AD%E6%A0%87%E7%BB%93%E6%9E%9C%E5%85%AC%E5%91%8A":
             tag = "中标公告"
         elif from_tag_url == "http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=853":
+            tag = "招标公告"
+        elif from_tag_url == 'http://www.hnsggzy.com/queryContent_2-jygk.jspx?channelId=853':
+            tag = "招标公告"
+        elif from_tag_url == 'http://www.hnsggzy.com/queryContent_3-jygk.jspx?channelId=853':
             tag = "招标公告"
         elif from_tag_url == "http://www.hnsggzy.com/queryContent-jygk.jspx?channelId=854":
             tag = "变更通知"

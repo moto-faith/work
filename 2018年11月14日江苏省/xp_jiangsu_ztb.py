@@ -99,187 +99,93 @@ class MySpider(spider.Spider):
         citys = ['省级', '南京市', '无锡市', '徐州市', '常州市', '苏州市', '南通市', '连云港市', '淮安市', '盐城市', '扬州市', '镇江市', '泰州市', '宿迁市']
         for city in citys:
             for equal in equals:
-                data1 = {"token": "",
-                         "pn": "0",
-                         "rn": "15",
-                         "sdt": "",
-                         "edt": "",
-                         "wd": "",
-                         "inc_wd": "",
-                         "exc_wd": "",
-                         "fields": "title",
-                         "cnum": "001",
-                         "sort": "{\"infodatepx\":\"0\"}",
-                         "ssort": "title",
-                         "cl": 200,
-                         "terminal": "",
-                         "condition": [
-                             {"fieldName": "categorynum", "isLike": True, "likeType": 2, "equal": equal},
-                             {"fieldName": "fieldvalue", "isLike": True, "likeType": 2, "equal": city}
-                         ],
-                         "time": None,
-                         "highlights": "title", "statistics": None, "unionCondition": None, "accuracy": "", "noParticiple": "0",
-                         "searchRange": None, "isBusiness": "1"}
-                url = 'http://jsggzy.jszwfw.gov.cn/inteligentsearch/rest/inteligentSearch/getFullTextData'
-                response = requests.post(url=url, json=data1)
-                dates = re.findall('"infodateformat":"(.*?)"', response.text)
-                titles = re.findall('"title":"(.*?)"', response.text)
-                ids = re.findall('"categorynum":"(.*?)"', response.text)[1:]
-                infoids = re.findall('"infoid":"(.*?)"', response.text)
+                for pn in range(0,40,20):
+                    data1 = {"token": "",
+                             "pn": pn,
+                             "rn": "15",
+                             "sdt": "",
+                             "edt": "",
+                             "wd": "",
+                             "inc_wd": "",
+                             "exc_wd": "",
+                             "fields": "title",
+                             "cnum": "001",
+                             "sort": "{\"infodatepx\":\"0\"}",
+                             "ssort": "title",
+                             "cl": 200,
+                             "terminal": "",
+                             "condition": [
+                                 {"fieldName": "categorynum", "isLike": True, "likeType": 2, "equal": equal},
+                                 {"fieldName": "fieldvalue", "isLike": True, "likeType": 2, "equal": city}
+                             ],
+                             "time": None,
+                             "highlights": "title", "statistics": None, "unionCondition": None, "accuracy": "", "noParticiple": "0",
+                             "searchRange": None, "isBusiness": "1"}
+                    url = 'http://jsggzy.jszwfw.gov.cn/inteligentsearch/rest/inteligentSearch/getFullTextData'
+                    response = requests.post(url=url, json=data1)
+                    dates = re.findall('"infodateformat":"(.*?)"', response.text)
+                    titles = re.findall('"title":"(.*?)"', response.text)
+                    ids = re.findall('"categorynum":"(.*?)"', response.text)[1:]
+                    infoids = re.findall('"infoid":"(.*?)"', response.text)
 
-                for id, infoid, date,title in zip(ids, infoids, dates,titles):
-                    date = date.replace("-","")
-                    link = 'http://jsggzy.jszwfw.gov.cn/jyxx/' + id[:6] + "/" + id + "/" + date + "/" + infoid + ".html"
-                    if id == "003001008":
-                        tag = "中标公告"
-                    elif id == "003001007":
-                        tag = "候选人公告"
-                    elif id == "003001001":
-                        tag = "招标公告"
-                    elif id == "003002001":
-                        tag = "招标公告"
-                    elif id == "003002003":
-                        tag = "候选人公告"
-                    elif id == "003002004":
-                        tag = "中标公告"
-                    elif id == "003003001":
-                        tag = "招标公告"
-                    elif id == "003003003":
-                        tag = "候选人公告"
-                    elif id == "003003004":
-                        tag = "中标公告"
-                    elif id == "003004002":
-                        tag = "招标公告"
-                    elif id == "003004003":
-                        tag = "候选人公告"
-                    elif id == "003004006":
-                        tag = "中标公告"
-                    else:
-                        tag = "招标公告"
-                    link = str(link)
-                    if self.getdumps(link):
-                        continue
-                    uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, link)) + str(uuid.uuid3(uuid.NAMESPACE_DNS, link))
-                    ctime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    service = ''
-                    industry = ""
-                    post = {
-                        "uuid": uid,  # md5
-                        "detailUrl": link,  # url
-                        "name": title,  # 标题
-                        "location": "江苏省",  # 地区
-                        "publicTime": date,  # 公布时间
-                        "tag": tag,  # 标签
-                        "site": self.site_domain,
-                        "siteName": self.siteName,
-                        "ctime": ctime,
-                        "industry": industry,
-                        "service": service,
-                    }
-                    dic = self.handle_post(post)
-                    try:
-                        self.db.table(self.table).add(dic)
-                    except Exception as e:
-                        print e
+                    for id, infoid, date,title in zip(ids, infoids, dates,titles):
+                        date = date.replace("-","")
+                        link = 'http://jsggzy.jszwfw.gov.cn/jyxx/' + id[:6] + "/" + id + "/" + date + "/" + infoid + ".html"
+                        if id == "003001008":
+                            tag = "中标公告"
+                        elif id == "003001007":
+                            tag = "候选人公告"
+                        elif id == "003001001":
+                            tag = "招标公告"
+                        elif id == "003002001":
+                            tag = "招标公告"
+                        elif id == "003002003":
+                            tag = "候选人公告"
+                        elif id == "003002004":
+                            tag = "中标公告"
+                        elif id == "003003001":
+                            tag = "招标公告"
+                        elif id == "003003003":
+                            tag = "候选人公告"
+                        elif id == "003003004":
+                            tag = "中标公告"
+                        elif id == "003004002":
+                            tag = "招标公告"
+                        elif id == "003004003":
+                            tag = "更正公告"
+                        elif id == "003004006":
+                            tag = "中标公告"
+                        else:
+                            tag = "招标公告"
+                        link = str(link)
+                        if self.getdumps(link):
+                            continue
+                        uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, link)) + str(uuid.uuid3(uuid.NAMESPACE_DNS, link))
+                        ctime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                        service = ''
+                        industry = ""
+                        post = {
+                            "uuid": uid,  # md5
+                            "detailUrl": link,  # url
+                            "name": title,  # 标题
+                            "location": "江苏省",  # 地区
+                            "publicTime": date,  # 公布时间
+                            "tag": tag,  # 标签
+                            "site": self.site_domain,
+                            "siteName": self.siteName,
+                            "ctime": ctime,
+                            "industry": industry,
+                            "service": service,
+                        }
+                        dic = self.handle_post(post)
+                        try:
+                            self.db.table(self.table).add(dic)
+                        except Exception as e:
+                            print e
 
 
 
     def parse_detail_page(self, response=None, url=None):
-        try:
-            response.encoding = self.encoding
-            unicode_html_body = response.text
-            print unicode_html_body
-            data = htmlparser.Parser(unicode_html_body)
-        except Exception, e:
-            return []
-        from_tag_url = response.url
-        # print unicode_html_body
-        data1 = {"token": "",
-                 "pn": "0",
-                 "rn": "15",
-                 "sdt": "",
-                 "edt": "",
-                 "wd": "",
-                 "inc_wd": "",
-                 "exc_wd": "",
-                 "fields": "title",
-                 "cnum": "001",
-                 "sort": "{\"infodatepx\":\"0\"}",
-                 "ssort": "title",
-                 "cl": 200,
-                 "terminal": "",
-                 "condition": [
-                     {"fieldName": "categorynum", "isLike": True, "likeType": 2, "equal": "003001001"},
-                     {"fieldName": "fieldvalue", "isLike": True, "likeType": 2, "equal": "省级"}
-                 ],
-                 "time": None,
-                 "highlights": "title", "statistics": None, "unionCondition": None, "accuracy": "", "noParticiple": "0",
-                 "searchRange": None, "isBusiness": "1"}
-        url = 'http://jsggzy.jszwfw.gov.cn/inteligentsearch/rest/inteligentSearch/getFullTextData'
-        response = requests.post(url=url, json=data1)
-        print response.text
-        json_list = json.loads(response.text)['result']['records']
-        for json_detail in json_list:
-            link = 'http://jsggzy.jszwfw.gov.cn/jyxx/' + json_detail['categorynum'][:6] + "/" + json_detail[
-                'categorynum'] + "/" + json_detail['infodateformat'].replace("-", "") + "/" + json_detail[
-                       'infoid'] + ".html"
-            date = json_detail['infodatepx']
-            date = str(date)[:10].replace("-", "")
-            title = json_detail['title']
-            if json_detail['categorynum'] == "003001008":
-                tag = "中标公告"
-            elif json_detail['categorynum'] == "003001007":
-                tag = "候选人公告"
-            elif json_detail['categorynum'] == "003001001":
-                tag = "招标公告"
-            elif json_detail['categorynum'] == "003002001":
-                tag = "招标公告"
-            elif json_detail['categorynum'] == "003002003":
-                tag = "候选人公告"
-            elif json_detail['categorynum'] == "003002004":
-                tag = "中标公告"
-            elif json_detail['categorynum'] == "003003001":
-                tag = "招标公告"
-            elif json_detail['categorynum'] == "003003003":
-                tag = "候选人公告"
-            elif json_detail['categorynum'] == "003003004":
-                tag = "中标公告"
-            elif json_detail['categorynum'] == "003004002":
-                tag = "招标公告"
-            elif json_detail['categorynum'] == "003004003":
-                tag = "候选人公告"
-            elif json_detail['categorynum'] == "003004006":
-                tag = "中标公告"
-            else:
-                tag = "招标公告"
-            if self.getdumps(link):
-                continue
-
-            uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, link)) + str(uuid.uuid3(uuid.NAMESPACE_DNS, link))
-            ctime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            service = ''
-            industry = ""
-            post = {
-                "uuid": uid,  # md5
-                "detailUrl": from_tag_url,  # url
-                "name": title,  # 标题
-                "location": "江苏省",  # 地区
-                "publicTime": date,  # 公布时间
-                "tag": tag,  # 标签
-                "site": self.site_domain,
-                "siteName": self.siteName,
-                "ctime": ctime,
-                "industry": industry,
-                "service": service,
-            }
-
-            dic = self.handle_post(post)
-            try:
-                self.db.table(self.table).add(dic)
-            except Exception as e:
-                print e
-
-            # str_post = json.dumps (post)
 
         return
 

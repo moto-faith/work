@@ -98,6 +98,9 @@ class MySpider(spider.Spider):
             'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/subPage_jyxx.html',
             # 工程建设招标公告
 
+            'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/2.html',
+            'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/3.html',
+
             'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001002/subPage_jyxx.html',
             # 工程建设变更公告
 
@@ -106,6 +109,9 @@ class MySpider(spider.Spider):
 
             'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001005/subPage_jyxx.html',
             # 工程建设中标候选人公示
+
+            'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001005/2.html',
+            'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001005/3.html',
 
             'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001003/subPage_jyxx.html',
             # 工程建设中标公示
@@ -127,13 +133,14 @@ class MySpider(spider.Spider):
 
             'http://www.sxggzyjy.cn/jydt/001001/001001004/001001004001/subPage_jyxx.html',
             # 政府采购采购公告
+            'http://www.sxggzyjy.cn/jydt/001001/001001004/001001004001/2.html',
 
             'http://www.sxggzyjy.cn/jydt/001001/001001004/001001004002/subPage_jyxx.html',
             # 政府采购更正公告
 
             'http://www.sxggzyjy.cn/jydt/001001/001001004/001001004003/subPage_jyxx.html',
             # 政府采购结果公告
-
+            'http://www.sxggzyjy.cn/jydt/001001/001001004/001001004003/2.html',
             'http://www.sxggzyjy.cn/jydt/001001/001001004/001001004004/subPage_jyxx.html',
             # 政府采购中止公告
         ]
@@ -160,11 +167,19 @@ class MySpider(spider.Spider):
 #         dates = data.xpathall('//span[@class="article-list-date"]/text()')
         if from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/subPage_jyxx.html":
             tag = "招标公告"
+        elif from_tag_url == 'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/2.html':
+            tag = "招标公告"
+        elif from_tag_url == 'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001001/3.html':
+            tag = "招标公告"
         elif from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001001/001001001002/subPage_jyxx.html":
             tag = "变更公告"
         elif from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001001/001001001004/subPage_jyxx.html":
             tag = "中止公告"
         elif from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001001/001001001005/subPage_jyxx.html":
+            tag = "候选人公示"
+        elif from_tag_url == 'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001005/2.html':
+            tag = "候选人公示"
+        elif from_tag_url == 'http://www.sxggzyjy.cn/jydt/001001/001001001/001001001005/3.html':
             tag = "候选人公示"
         elif from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001001/001001001003/subPage_jyxx.html":
             tag = "中标公示"
@@ -180,9 +195,13 @@ class MySpider(spider.Spider):
             tag = "中标公告"
         elif from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001004/001001004001/subPage_jyxx.html":
             tag = "招标公告"
+        elif from_tag_url == 'http://www.sxggzyjy.cn/jydt/001001/001001004/001001004001/2.html':
+            tag = "招标公告"
         elif from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001004/001001004002/subPage_jyxx.html":
             tag = "更正公告"
         elif from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001004/001001004003/subPage_jyxx.html":
+            tag = "中标公告"
+        elif from_tag_url == 'http://www.sxggzyjy.cn/jydt/001001/001001004/001001004003/2.html':
             tag = "中标公告"
         elif from_tag_url == "http://www.sxggzyjy.cn/jydt/001001/001001004/001001004004/subPage_jyxx.html":
             tag = "中止公告"
@@ -199,7 +218,7 @@ class MySpider(spider.Spider):
             date = item.xpath('''//span/text()''').text ().strip ()
             date = str(date).replace("-", "")
 
-            link = "http://www.sxggzyjy.cn" + str(link)
+            link = urljoin("http://www.sxggzyjy.cn" ,link)
             if self.getdumps(link):
                 continue
             uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, link)) + str(uuid.uuid3(uuid.NAMESPACE_DNS, link))

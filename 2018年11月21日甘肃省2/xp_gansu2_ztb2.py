@@ -19,9 +19,7 @@ from urlparse import urljoin
 from db import DB
 import MySQLdb
 import uuid
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+
 import requests
 import copy
 import urllib3
@@ -45,11 +43,11 @@ class MySpider(spider.Spider):
         self.site_domain = 'ggzyjy.gansu.gov.cn'
         self.dedup_uri = None
         self.headers = {
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            # 'Accept-Encoding': 'gzip, deflate',
+            # 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
             # 'Cache-Control': 'max-age=0',
-            'Connection': 'keep-alive',
+            # 'Connection': 'keep-alive',
             # 'Cookie': 'UM_distinctid=1670593cdcc4f5-0800ff5ff60ef9-594d2a16-15f900-1670593cdce395; CNZZDATA1264557630=446493554-1541984678-%7C1541984678',
             # 'DNT': '1',
             # 'Host': 'www.scggzy.gov.cn',
@@ -147,7 +145,9 @@ class MySpider(spider.Spider):
                 '''//form//text()''')  # 内容
             content = ''
             for i in contents:
-                content += i.text ().strip ()
+                content += i.text ().strip () + " "
+            if content=='':
+                content = self.siteName
 
             content = self.makecontent (content)
             # 4采购人

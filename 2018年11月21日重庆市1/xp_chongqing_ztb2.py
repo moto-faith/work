@@ -19,9 +19,7 @@ from urlparse import urljoin
 from db import DB
 import MySQLdb
 import uuid
-import sys
-reload(sys)
-sys.setdefaultencoding("utf-8")
+
 import requests
 import copy
 import urllib3
@@ -147,7 +145,7 @@ class MySpider(spider.Spider):
                 '''//div[@class="detail-block"]//text()''')  # 内容
             content = ''
             for i in contents:
-                content += i.text ().strip ()
+                content += i.text ().strip () + " "
 
             content = self.makecontent (content)
             # 4采购人

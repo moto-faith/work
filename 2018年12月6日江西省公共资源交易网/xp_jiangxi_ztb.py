@@ -17,10 +17,7 @@ from urlparse import urljoin
 import uuid
 from db import DB
 import MySQLdb
-import sys
 
-reload(sys)
-sys.setdefaultencoding("utf-8")
 import copy
 
 
@@ -169,17 +166,17 @@ class MySpider(spider.Spider):
             link= item.xpath('''//a/@href''').text ().strip ()
             date = item.xpath('''//span/text()''').text ().strip ()
             date = str(date).replace("-", "")
-
+            publicTime = date
 
 #         titles = data.xpathall('//a[@class="btn btn-default article-list-single"]/@title')
 #         links = data.xpathall('//a[@class="btn btn-default article-list-single"]/@href')
 #         dates = data.xpathall('//span[@class="article-list-date"]/text()')
 
 
-            link = "http://ggzyweb.jiangxi.gov.cn"+link
+            link = urljoin("http://ggzyweb.jiangxi.gov.cn",link)
             if self.getdumps(link):
                 continue
-            link = str(link)
+
             uid = str(uuid.uuid5(uuid.NAMESPACE_DNS, link)) + str(uuid.uuid3(uuid.NAMESPACE_DNS, link))
             ctime = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             location = "江西省"
@@ -190,7 +187,7 @@ class MySpider(spider.Spider):
                 "detailUrl": link,  # url
                 "name": title,  # 标题
                 "location": location,  # 地区
-                "publicTime": date,  # 公布时间
+                "publicTime": publicTime,  # 公布时间
                 "tag": tag,  # 标签
                 "site": self.site_domain,
                 "siteName": self.siteName,

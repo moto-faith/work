@@ -95,8 +95,20 @@ class MySpider(spider.Spider):
         # except Exception, e:
         #     return ([], None, None)
         url_list = [
-            'http://www.scggzy.gov.cn/Info/GetInfoListNew?times=4&page=1&parm=1541986925633',
-            # 'http://www.scggzy.gov.cn/Info/GetInfoListNew?times=4&page=2&parm=1541986925633',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?times=4&businessType=project&informationType=TenderAnnQuaInqueryAnn&page=1',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?times=4&businessType=project&informationType=TenderAnnQuaInqueryAnn&page=2',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?times=4&businessType=project&informationType=TenderAnnQuaInqueryAnn&page=3',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBulletin&industryType=&page=1&parm=1548832423408',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBulletin&industryType=&page=2&parm=1548832423408',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBulletin&industryType=&page=3&parm=1548832423408',
+
+
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=project&informationType=BidOpenRecord&industryType=&page=1&parm=1548832777532',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=project&informationType=BidOpenRecord&industryType=&page=2&parm=1548832777532',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=project&informationType=BidOpenRecord&industryType=&page=3&parm=1548832777532',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBid&industryType=&page=1&parm=1548832900074',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBid&industryType=&page=2&parm=1548832900074',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBid&industryType=&page=3&parm=1548832900074',
         ]
 
         return (url_list, None, None)
@@ -109,17 +121,37 @@ class MySpider(spider.Spider):
         except Exception, e:
             return []
         from_tag_url = response.url
-        print from_tag_url
+        zbgg = [
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?times=4&businessType=project&informationType=TenderAnnQuaInqueryAnn&page=1',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?times=4&businessType=project&informationType=TenderAnnQuaInqueryAnn&page=2',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?times=4&businessType=project&informationType=TenderAnnQuaInqueryAnn&page=3',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBulletin&industryType=&page=1&parm=1548832423408',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBulletin&industryType=&page=2&parm=1548832423408',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBulletin&industryType=&page=3&parm=1548832423408',
+        ]
+        zhong = [
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=project&informationType=BidOpenRecord&industryType=&page=1&parm=1548832777532',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=project&informationType=BidOpenRecord&industryType=&page=2&parm=1548832777532',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=project&informationType=BidOpenRecord&industryType=&page=3&parm=1548832777532',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBid&industryType=&page=1&parm=1548832900074',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBid&industryType=&page=2&parm=1548832900074',
+            'http://www.scggzy.gov.cn/Info/GetInfoListNew?keywords=&times=4&timesStart=&timesEnd=&province=&area=&businessType=purchase&informationType=PurchaseBid&industryType=&page=3&parm=1548832900074',
+        ]
         # print unicode_html_body
+        if from_tag_url in zbgg:
+            tag = '招标公告'
+        elif from_tag_url in zhong:
+            tag = '中标公告'
+        else:
+            tag = '招标公告'
 
         json_list = json.loads(unicode_html_body)["data"]
         titles = re.findall('"Title":"(.*?)"', json_list)
         links = re.findall('"Link":"(.*?)"', json_list)
         dates = re.findall('"CreateDateStr":"(.*?)"', json_list)
-        tags = re.findall('"TableName":"(.*?)"', json_list)
         citys = re.findall('"username":"(.*?)"', json_list)
 
-        for title,link,date,tag,city in zip(titles,links,dates,tags,citys):
+        for title,link,date,city in zip(titles,links,dates,citys):
             link = 'http://www.scggzy.gov.cn'+str(link)
             if self.getdumps(link):
                 continue

@@ -96,12 +96,17 @@ class MySpider(spider.Spider):
         #     return ([], None, None)
         url_list = [
             'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&type=1',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&pageNo=2&type=1&notice_name=',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&pageNo=3&type=1&notice_name=',
             # 工程建设招标公告
 
             'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&type=7',
             # 工程建设招标澄清
 
             'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&type=4',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&pageNo=2&type=4&notice_name=',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&pageNo=3&type=4&notice_name=',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&pageNo=4&type=4&notice_name=',
             # 工程建设中标公告
 
             'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=17&type=1',
@@ -143,27 +148,26 @@ class MySpider(spider.Spider):
 #         titles = data.xpathall('//a[@class="btn btn-default article-list-single"]/@title')
 #         links = data.xpathall('//a[@class="btn btn-default article-list-single"]/@href')
 #         dates = data.xpathall('//span[@class="article-list-date"]/text()')
-        if from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&type=1":
-            tag = "招标公告"
-        elif from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&type=7":
-            tag = "变更通知"
-        elif from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&type=4":
-            tag = "中标公告"
-        elif from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=17&type=1":
-            tag = "招标公告"
-        elif from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=17&type=7":
-            tag = "变更通知"
-        elif from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=17&type=4":
-            tag = "中标公告"
-        elif from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=19&type=1":
-            tag = "招标公告"
-        elif from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=19&type=7":
-            tag = "变更通知"
-        elif from_tag_url == "http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=19&type=4":
-            tag = "中标公告"
-        else:
-            tag = "招标公告"
+        zbgg = [
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&type=1',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&pageNo=2&type=1&notice_name=',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&pageNo=3&type=1&notice_name=',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=17&type=1',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=19&type=1',
 
+        ]
+        bggg = [
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=16&type=7',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=17&type=7',
+            'http://www.hljggzyjyw.gov.cn/trade/tradezfcg?cid=19&type=7',
+
+        ]
+        if from_tag_url in zbgg:
+            tag = '招标公告'
+        elif from_tag_url in bggg:
+            tag = '变更公告'
+        else:
+            tag = '中标公告'
         li_content = data.xpathall('''//div[@class="right_box"]/ul/li''')
 
         # for title,link,date in zip(titles,links,dates):
@@ -173,7 +177,7 @@ class MySpider(spider.Spider):
             date = item.xpath('''//span[@class="date"]/text()''').text ().strip ()
             date = str(date).replace("-", "")
 
-            link = "http://www.hljggzyjyw.gov.cn"+link
+            link = urljoin("http://www.hljggzyjyw.gov.cn",link)
             if self.getdumps(link):
                 continue
             link = str(link)
